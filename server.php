@@ -13,13 +13,13 @@ $open_ai->setORG("org-evQwRS16eXJhUXWWPv0OoMzS");
 
 header("Content-Type: Application/json");
 
-if ($_SERVER['REQUEST_METHOD'] !== "POST") {
+if ($_SERVER['REQUEST_METHOD'] != "POST") {
     http_response_code(405);
     exit;
 }
 
 $req_data = json_decode(file_get_contents("php://input"), false);
-if (empty($req_data->message)) {
+if (empty($req_data->message) || !isset($req_data->message)) {
     http_response_code(400);
     exit;
 }
@@ -41,7 +41,7 @@ $chat = $open_ai->chat([
 
 
 // send request back
-if ($chat == true) {
+if ($chat) {
     $data = json_decode($chat);
 
     $response = [
@@ -50,6 +50,18 @@ if ($chat == true) {
         'data' => $data->choices[0]->message->content,
         'created' => date('Y-m-d H:i:s', $data->created)
     ];
+
+
+    if (isset($_COOKIE['message_db'])) {
+        $message_db = json_decode(base64_decode($_COOKIE['message_db']), true);
+        $value = array_merge($message_db, $response);
+
+        $messages = base64_encode(json_encode($value));
+        setcookie('message_db', $messages, time() + (86400 * 30), "/");
+    } else {
+        $messages = base64_encode(json_encode($response));
+        setcookie('message_db', $messages, time() + (86400 * 30), "/");
+    }
 
     http_response_code(200);
     echo json_encode($response);
