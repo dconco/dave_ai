@@ -1,7 +1,8 @@
 <?php
 
-require __DIR__ . './vendor/autoload.php';
-require __DIR__ . './env.config.php';
+require './vendor/autoload.php';
+require './env.config.php';
+require './cors.php';
 
 use Orhanerday\OpenAi\OpenAi;
 
@@ -9,10 +10,17 @@ $open_ai_secret = getenv('OPENAI_API_KEY');
 $open_ai = new OpenAi($open_ai_secret);
 $open_ai->setORG("org-evQwRS16eXJhUXWWPv0OoMzS");
 
+
 header("Content-Type: Application/json");
 
 if ($_SERVER['REQUEST_METHOD'] !== "POST") {
     http_response_code(405);
+    exit;
+}
+
+$req_data = json_decode(file_get_contents("php://input"), false);
+if (empty($req_data->message)) {
+    http_response_code(400);
     exit;
 }
 
@@ -22,7 +30,7 @@ $chat = $open_ai->chat([
     'messages' => [
         [
             "role" => "user",
-            "content" => "who is dave conco?"
+            "content" => $req_data->message
         ]
     ],
     'temperature' => 1.0,
@@ -40,7 +48,7 @@ if ($chat == true) {
         'id' => $data->id,
         'status' => 'success',
         'data' => $data->choices[0]->message->content,
-        'created' => date($data->created, 'Y-m-d H:i:s')
+        'created' => date('Y-m-d H:i:s', $data->created)
     ];
 
     http_response_code(200);
