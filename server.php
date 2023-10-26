@@ -1,45 +1,51 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/env.php';
+require __DIR__ . './vendor/autoload.php';
+require __DIR__ . './env.config.php';
 
 use Orhanerday\OpenAi\OpenAi;
 
-$open_ai_key = env('OPENAI_API_KEY');
-$open_ai = new OpenAi($open_ai_key);
+$open_ai_secret = getenv('OPENAI_API_KEY');
+$open_ai = new OpenAi($open_ai_secret);
+$open_ai->setORG("org-evQwRS16eXJhUXWWPv0OoMzS");
 
+header("Content-Type: Application/json");
+
+if ($_SERVER['REQUEST_METHOD'] !== "POST") {
+    http_response_code(405);
+    exit;
+}
+
+// send message
 $chat = $open_ai->chat([
-   'model' => 'gpt-3.5-turbo',
-   'messages' => [
-       [
-           "role" => "system",
-           "content" => "You are a helpful assistant."
-       ],
-       [
-           "role" => "user",
-           "content" => "Who won the world series in 2020?"
-       ],
-       [
-           "role" => "assistant",
-           "content" => "The Los Angeles Dodgers won the World Series in 2020."
-       ],
-       [
-           "role" => "user",
-           "content" => "Where was it played?"
-       ],
-   ],
-   'temperature' => 1.0,
-   'max_tokens' => 4000,
-   'frequency_penalty' => 0,
-   'presence_penalty' => 0,
+    'model' => 'gpt-3.5-turbo',
+    'messages' => [
+        [
+            "role" => "user",
+            "content" => "who is dave conco?"
+        ]
+    ],
+    'temperature' => 1.0,
+    'max_tokens' => 150,
+    'frequency_penalty' => 0,
+    'presence_penalty' => 0,
 ]);
 
 
-var_dump($chat);
-echo "<br>";
-echo "<br>";
-echo "<br>";
-// decode response
-$d = json_decode($chat);
-// Get Content
-echo($d->choices[0]->message->content);
+// send request back
+if ($chat == true) {
+    $data = json_decode($chat);
+
+    $response = [
+        'id' => $data->id,
+        'status' => 'success',
+        'data' => $data->choices[0]->message->content,
+        'created' => date($data->created, 'Y-m-d H:i:s')
+    ];
+
+    http_response_code(200);
+    echo json_encode($response);
+} else {
+    http_response_code(500);
+    exit;
+}
