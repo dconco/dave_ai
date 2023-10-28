@@ -13,13 +13,15 @@ $open_ai->setORG("org-evQwRS16eXJhUXWWPv0OoMzS");
 
 header("Content-Type: Application/json");
 
-if ($_SERVER['REQUEST_METHOD'] != "POST") {
+if ($_SERVER['REQUEST_METHOD'] != "POST")
+{
     http_response_code(405);
     exit;
 }
 
 $req_data = json_decode(file_get_contents("php://input"), false);
-if (empty($req_data->message) || !isset($req_data->message)) {
+if (empty($req_data->message) || !isset($req_data->message))
+{
     http_response_code(400);
     exit;
 }
@@ -34,14 +36,14 @@ $chat = $open_ai->chat([
         ]
     ],
     'temperature' => 1.0,
-    'max_tokens' => 150,
+    'max_tokens' => 1000,
     'frequency_penalty' => 0,
     'presence_penalty' => 0,
 ]);
 
-
 // send request back
-if ($chat) {
+if ($chat)
+{
     $data = json_decode($chat);
 
     $response = [
@@ -52,20 +54,25 @@ if ($chat) {
     ];
 
 
-    if (isset($_COOKIE['message_db'])) {
-        $message_db = json_decode(base64_decode($_COOKIE['message_db']), true);
+    if (isset($_COOKIE['message_db']))
+    {
+        $message_db = (array)json_decode(base64_decode($_COOKIE['message_db']), true);
         $value = array_merge($message_db, $response);
 
         $messages = base64_encode(json_encode($value));
         setcookie('message_db', $messages, time() + (86400 * 30), "/");
-    } else {
+    }
+    else
+    {
         $messages = base64_encode(json_encode($response));
         setcookie('message_db', $messages, time() + (86400 * 30), "/");
     }
 
     http_response_code(200);
     echo json_encode($response);
-} else {
+}
+else
+{
     http_response_code(500);
     exit;
 }
