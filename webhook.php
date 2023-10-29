@@ -1,54 +1,218 @@
 <?php
+require 'vendor/autoload.php';
 
-require './vendor/autoload.php';
-require './env.config.php';
-require './cors.php';
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Exception\RequestException;
 
-$access_token = 'EAAOOom4rGZAQBO39O3y4LBNjEInMVGMDUSyaZBZAC7RZCLbzMcn8tSZBjpY2ByY8DaBEHSVuLUxcU65pLABWQSHRBcM4ZAvRQ4JV9O9EYbqtCKcK56QincB3oJMswtNYTAMrDfpxdBb7PtggjGXlI9skM5ZClb38lq8aSme8jxqTZAnRsS3aYWPiv0vYRUFHj6JQmdZAilCOhtvSPiktn';
-$verify_token = 'fb_davebot_token';
-$hub_verify_token = null;
-
-/* validate verify token needed for setting up web hook */
-if (isset($_REQUEST['hub_verify_token']))
+class Bot
 {
-    if (isset($_REQUEST['hub_challenge']))
+    private $hubVerifyToken = null;
+    private $accessToken = null;
+    private $tokken = false;
+    protected $client = null;
+    function __construct()
     {
-        $challenge = $_REQUEST['hub_challenge'];
-        $hub_verify_token = $_REQUEST['hub_verify_token'];
     }
-    if ($hub_verify_token === $verify_token)
+
+    public function setHubVerifyToken($value)
     {
-        echo $challenge;
+        $this->hubVerifyToken = $value;
     }
-}
 
-/* receive and send messages */
-$input = json_decode(file_get_contents('php://input'), true);
-if (isset($input['entry'][0]['messaging'][0]['sender']['id']))
-{
+    public function setAccessToken($value)
+    {
+        $this->accessToken = $value;
+    }
 
-    $sender = $input['entry'][0]['messaging'][0]['sender']['id']; //sender facebook id
-    $message = $input['entry'][0]['messaging'][0]['message']['text']; //text that user sent
+    public
 
-    $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=' . $access_token;
-
-    /*initialize curl*/
-    $ch = curl_init($url);
-    /*prepare response*/
-    $jsonData = '{
-    "recipient":{
-        "id":"' . $sender . '"
-        },
-        "message":{
-            "text":"You said, ' . $message . '"
+    function verifyTokken($hub_verify_token, $challange)
+    {
+        try
+        {
+            if ($hub_verify_token === $this->hubVerifyToken)
+            {
+                return $challange;
+            }
+            else
+            {
+                throw new Exception("Tokken not verified");
+            }
         }
-    }';
-    /* curl setting to send a json post data */
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json' ));
-    if (!empty($message))
+        catch ( Exception $ex )
+        {
+            return $ex->getMessage();
+        }
+    }
+
+    public function readMessage($input)
     {
-        $result = curl_exec($ch); // user will get the message
+        try
+        {
+            $payloads = null;
+            $senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
+            $messageText = $input['entry'][0]['messaging'][0]['message']['text'];
+            $postback = $input['entry'][0]['messaging'][0]['postback'];
+            $loctitle = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['title'];
+            if (!empty($postback))
+            {
+                $payloads = $input['entry'][0]['messaging'][0]['postback']['payload'];
+                return [ 'senderid' => $senderId, 'message' => $payloads ];
+            }
+
+            if (!empty($loctitle))
+            {
+                $payloads = $input['entry'][0]['messaging'][0]['postback']['payload'];
+                return [ 'senderid' => $senderId, 'message' => $messageText, 'location' => $loctitle ];
+            }
+
+            // var_dump($senderId,$messageText,$payload);
+            //   $payload_txt = $input['entry'][0]['messaging'][0]['message']['quick_reply']‌​['payload'];
+
+            return [ 'senderid' => $senderId, 'message' => $messageText ];
+        }
+        catch ( Exception $ex )
+        {
+            return $ex->getMessage();
+        }
+    }
+
+    public function sendMessage($input)
+    {
+        try
+        {
+            $client = new Client();
+            $url = "https://graph.facebook.com/v2.6/me/messages";
+            $messageText = strtolower($input['message']);
+            $senderId = $input['senderid'];
+            $msgarray = explode(' ', $messageText);
+            $response = null;
+            $header = array(
+             'content-type' => 'application/json'
+            );
+            if (in_array('hi', $msgarray))
+            {
+                $answer = "Hello! how may I help you today?";
+                $response = [ 'recipient' => [ 'id' => $senderId ], 'message' => [ 'text' => $answer ], 'access_token' => $this->accessToken ];
+            }
+            elseif (in_array('blog', $msgarray))
+            {
+                $answer = [
+                "attachment" => [
+                "type" => "template",
+                "payload" => [
+                "template_type" => "generic",
+                "elements" => [ [
+                "title" => "Migrate your symfony application",
+                "item_url" => "https://www.cloudways.com/blog/migrate-symfony-from-cpanel-to-cloud-hosting/",
+                "image_url" => "https://www.cloudways.com/blog/wp-content/uploads/Migrating-Your-Symfony-Website-To-Cloudways-Banner.jpg",
+                "subtitle" => "Migrate your symfony application from Cpanel to Cloud.",
+                "buttons" => [ [
+                "type" => "web_url",
+                "url" => "www.cloudways.com",
+                "title" => "View Website" ],
+                [ "type" => "postback",
+                "title" => "Start Chatting",
+                "payload" => "get started" ] ]
+                ] ]
+                ] ] ];
+                $response = [
+                'recipient' => [ 'id' => $senderId ],
+                'message' => $answer,
+                'access_token' => $this->accessToken
+                ];
+            }
+            elseif (in_array('list', $msgarray))
+            {
+                $answer = [ "attachment" => [
+                "type" => "template",
+                "payload" => [
+                "template_type" => "list",
+                "elements" => [ [
+                "title" => "Welcome to Peter\'s Hats", "item_url" => "https://www.cloudways.com/blog/migrate-symfony-from-cpanel-to-cloud-hosting/",
+                "image_url" => "https://www.cloudways.com/blog/wp-content/uploads/Migrating-Your-Symfony-Website-To-Cloudways-Banner.jpg",
+                "subtitle" => "We\'ve got the right hat for everyone.",
+                "buttons" => [
+                [
+                "type" => "web_url", "url" => "https://cloudways.com",
+                "title" => "View Website" ],
+                ] ],
+                [
+                "title" => "Multipurpose Theme Design and Versatility",
+                "item_url" => "https://www.cloudways.com/blog/multipurpose-wordpress-theme-for-agency/",
+                "image_url" => "https://www.cloudways.com/blog/wp-content/uploads/How-a-multipurpose-WordPress-theme-can-help-your-agency-Banner.jpg",
+                "subtitle" => "We've got the right theme for everyone.",
+                "buttons" => [
+                [
+                "type" => "web_url",
+                "url" => "https://cloudways.com",
+                "title" => "View Website"
+                ],] ],
+                [
+                "title" => "Add Custom Discount in Magento 2",
+                "item_url" => "https://www.cloudways.com/blog/add-custom-discount-magento-2/",
+                "image_url" => "https://www.cloudways.com/blog/wp-content/uploads/M2-Custom-Discount-Banner.jpg",
+                "subtitle" => "Learn adding magento 2 custom discounts.",
+                "buttons" => [
+                [
+                "type" => "web_url",
+                "url" => "https://cloudways.com",
+                "title" => "View Website" ],
+                ] ]
+                ] ]
+                ] ];
+
+                $response = [
+                'recipient' => [ 'id' => $senderId ],
+                'message' => $answer,
+                'access_token' => $this->accessToken
+                ];
+            }
+            elseif ($messageText == 'get started')
+            {
+                $answer = [
+                "text" => "Please share your location:",
+                "quick_replies" => [
+                [
+                "content_type" => "location",
+                ]
+                ] ];
+                $response = [
+                'recipient' => [ 'id' => $senderId ],
+                'message' => $answer,
+                'access_token' => $this->accessToken
+                ];
+            }
+            else if ($messageText == 'hi')
+            {
+                $answer = "Hello! How may I help you today ";
+                $response = [
+                'recipient' => [ 'id' => $senderId ], 'message' => [ 'text' => $answer ], 'access_token' => $this->accessToken
+                ];
+            }
+            elseif (!empty($input['location']))
+            {
+                $answer = [ "text" => 'great you are at' . $input['location'],];
+                $response = [ 'recipient' => [ 'id' => $senderId ], 'message' => $answer, 'access_token' => $this->accessToken ];
+            }
+            elseif (!empty($messageText))
+            {
+                $answer = 'I can not Understand you ask me about blogs';
+                $response = [ 'recipient' => [ 'id' => $senderId ], 'message' => [ 'text' => $answer ], 'access_token' => $this->accessToken ];
+            }
+
+            $response = $client->post($url, [ 'query' => $response, 'headers' => $header ]);
+
+            return true;
+        }
+        catch ( RequestException $e )
+        {
+            $response = json_decode($e->getResponse()->getBody()->getContents(), true);
+            file_put_contents("test.json", json_encode($response));
+            return $response;
+        }
     }
 }
+
+?>
