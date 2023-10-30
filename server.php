@@ -2,7 +2,6 @@
 
 require './vendor/autoload.php';
 require './env.config.php';
-require './cors.php';
 
 use Orhanerday\OpenAi\OpenAi;
 
