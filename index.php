@@ -13,7 +13,7 @@
 <body class="text-center">
     <h2>Welcome to DaveBot | World of Ai</h2>
     <br>
-    <a href="https://github.com/dconco"><button class="btn btn-primary">Continue</button></a>
+    <a href="https://dconco.github.com/davebot"><button class="btn btn-primary">Continue</button></a>
 </body>
 
 </html>
