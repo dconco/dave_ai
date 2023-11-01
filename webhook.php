@@ -13,7 +13,7 @@ if ($my_verify_token === $verify_token)
     exit;
 }
 
-$access_token = 'EAAOOom4rGZAQBO4uy0kczvtZCSuzZA7NH83hSWewMTAliyb3RaOS0qm1BrGbifZCreoI1N4cZBzKgxHyf1Wrw5enH6KYZAp3nYAn7KZBxNsmzdr2PcvtUofWvnYzN9CIVFzh0LqStVcudqEno8MKTZCNBsZAZAG9qeuZCC9ZBwezpL5naiJXLl6YznwZCluHOODy9aZAuPROPF7RZBAfa52tQTF';
+$access_token = 'EAAOOom4rGZAQBO3mvNrzcIAR6qeSSk0xBpqV6GxrZCdlwC1ZBQYBRcouF33YasGd3W6OEr7ToVHHLHl2erqDZBZA7ZAOQvJxdNZC68pM3qOz4JLNbFtt47SrLC1lK14QZCxeMboYSUapLjkNILO0wjXAlvGxirflWlQHYRuEfGYNEQzF7uXiGFeIUACsJJ13hZCUz2nHQvuut09aor1aI';
 
 $response = file_get_contents('php://input');
 
@@ -22,8 +22,21 @@ $response = json_decode($response, true);
 $message = $response['entry'][0]['messaging'][0]['message']['text'];
 $sender_id = $response['entry'][0]['messaging'][0]['sender']['id'];
 $receiver_id = $response['entry'][0]['messaging'][0]['recipient']['id'];
-
 $message_time = date('d-m-Y H:i:s', $response['entry'][0]['messaging'][0]['timestamp']);
+
+$reply = [
+    'sender' => [
+        'sender_id' => $sender_id,
+        'receiver_id' => $receiver_id,
+        'message' => $message,
+        'message_time' => $message_time
+    ]
+];
+
+$get_log = fopen('.log', 'a');
+fwrite($get_log, $get_log . "\n\n" . json_encode($reply));
+
+$new_message = $message;
 
 $reply = [
     'messaging_type' => 'RESPONSE',
@@ -31,8 +44,18 @@ $reply = [
         'id' => $sender_id,
     ],
     'message' => [
-        'text' => $message
+        'text' => $new_message
     ]
 ];
 
-send_reply($access_token, $reply);
+$response = send_reply($access_token, $reply);
+$add_arr = [
+    'message' => $new_message,
+    'message_time' => $message_time
+];
+
+if ($response)
+{
+    $response = array_merge($response, $add_arr);
+    fwrite($get_log, $get_log . "\n\n" . json_encode($response));
+}

@@ -1,6 +1,6 @@
 <?php
 
-function send_reply(string $access_token, array $message): void
+function send_reply(string $access_token, array $message): bool|array
 {
     $url = "https://graph.facebook.com/v2.6/109664085466137/messages?access_token=$access_token";
 
@@ -12,9 +12,22 @@ function send_reply(string $access_token, array $message): void
         ]
     ];
 
-    if (stream_context_create($options))
+    // get contents of response in API
+    $context = stream_context_create($options);
+    $resp = file_get_contents($url, false, $context);
+
+    // change response value to null, and return null
+    if ($resp)
     {
-        exit;
+        $response = json_decode($resp, true);
+    }
+    else
+    {
+        $response = false;
     }
 
+    $context = null;
+    $resp = null;
+
+    return $response;
 }
