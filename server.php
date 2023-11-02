@@ -48,24 +48,24 @@ if ($chat)
     $response = [
         'id' => $data->id,
         'status' => 'success',
+        'created' => $data->created,
         'data' => $data->choices[0]->message->content,
-        'created' => date('Y-m-d H:i:s', $data->created)
     ];
 
 
-    if (isset($_COOKIE['message_db']))
-    {
-        $message_db = (array)json_decode(base64_decode($_COOKIE['message_db']), true);
-        $value = array_merge($message_db, $response);
+    // if (isset($_COOKIE['message_db']))
+    // {
+    //     $message_db = (array)json_decode(base64_decode($_COOKIE['message_db']), true);
+    //     $value = array_merge($message_db, $response);
 
-        $messages = base64_encode(json_encode($value));
-        setcookie('message_db', $messages, time() + (86400 * 30), "/");
-    }
-    else
-    {
-        $messages = base64_encode(json_encode($response));
-        setcookie('message_db', $messages, time() + (86400 * 30), "/");
-    }
+    //     $messages = base64_encode(json_encode($value));
+    //     setcookie('message_db', $messages, time() + (86400 * 30), "/");
+    // }
+    // else
+    // {
+    //     $messages = base64_encode(json_encode($response));
+    //     setcookie('message_db', $messages, time() + (86400 * 30), "/");
+    // }
 
     http_response_code(200);
     echo json_encode($response);
