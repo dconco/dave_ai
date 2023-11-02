@@ -40,7 +40,7 @@ $chat = $open_ai->chat([
         ]
     ],
     'temperature' => 1.0,
-    'max_tokens' => 1000,
+    'max_tokens' => 500,
     'frequency_penalty' => 0,
     'presence_penalty' => 0,
 ]);
