@@ -1,9 +1,9 @@
 <?php
 // Allow cross-origin requests from any origin
-header("Access-Control-Allow-Origin: http://127.0.0.1:5500");
+header("Access-Control-Allow-Origin: *");
 
 // Allow specific HTTP methods (e.g., GET, POST, OPTIONS)
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, UPDATE, DELETE");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
 // Allow specific HTTP headers
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers");
