@@ -2,6 +2,7 @@
 
 require './vendor/autoload.php';
 require './env.config.php';
+require './cors.php';
 
 use Orhanerday\OpenAi\OpenAi;
 
@@ -21,8 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] != "POST")
 $req_data = json_decode(file_get_contents("php://input"), false);
 if (empty($req_data->message) || !isset($req_data->message))
 {
-    http_response_code(400);
+    header("HTTP/1.1 400 Request body message is empty");
     exit;
+}
+else if (empty($req_data->origin) || !isset($req_data->origin) || !preg_match('/^((https?:\/\/)?127\.0\.0\.1:5500\/?)$/', $req_data->origin))
+{
+    header("HTTP/1.1 400 Request origin is invalid");
 }
 
 // send message
@@ -67,7 +72,7 @@ if ($chat)
     //     setcookie('message_db', $messages, time() + (86400 * 30), "/");
     // }
 
-    http_response_code(200);
+    header("HTTP/1.1 200 OK");
     echo json_encode($response);
 }
 else
