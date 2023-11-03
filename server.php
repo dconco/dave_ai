@@ -13,7 +13,7 @@ $open_ai->setORG("org-evQwRS16eXJhUXWWPv0OoMzS");
 
 header("Content-Type: Application/json");
 
-if ($_SERVER['REQUEST_METHOD'] !== ("POST" | "OPTION"))
+if ($_SERVER['REQUEST_METHOD'] !== "POST")
 {
     http_response_code(405);
     exit;
@@ -25,7 +25,7 @@ if (empty($req_data->message) || !isset($req_data->message))
     header("HTTP/1.1 400 Request body message is empty");
     exit;
 }
-else if (empty($req_data->origin) || !isset($req_data->origin) || !preg_match('/^((https?:\/\/)?127\.0\.0\.1:5500\/?)$/', $req_data->origin) || !preg_match('/^((https?:\/\/)?dconco\.github\.io\/?)$/', $req_data->origin))
+else if (empty($req_data->origin) || !isset($req_data->origin) || !preg_match('/^((http?:\/\/)?localhost\/?)$/', $req_data->origin))
 {
     header("HTTP/1.1 400 Request origin is invalid");
     exit;
