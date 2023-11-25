@@ -20,6 +20,7 @@ function send_reply(string $access_token, array $message): bool|array
     if ($resp)
     {
         $response = json_decode($resp, true);
+        $response = send_bot($response);
     }
     else
     {

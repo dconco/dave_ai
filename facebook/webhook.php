@@ -1,7 +1,9 @@
 <?php
 
-include_once './send.php';
+include_once '../vendor/autoload.php';
 include_once '../config.php';
+include_once './send.php';
+include_once './index.php ';
 
 $challenge = $_GET['hub_challenge'];
 $verify_token = $_GET['hub_verify_token'];
@@ -31,7 +33,10 @@ $reply = [
 ];
 
 $get_log = fopen('.log', 'a');
-fwrite($get_log, $get_log . "\n\n" . json_encode($reply));
+if ($reply['sender']['message'] != '' && $reply['sender']['message'] != null)
+{
+    fwrite($get_log, $get_log . "\n\n" . json_encode($reply));
+}
 
 $new_message = $message;
 
@@ -53,6 +58,9 @@ $add_arr = [
 
 if ($response)
 {
-    $response = array_merge($response, $add_arr);
-    fwrite($get_log, $get_log . "\n\n" . json_encode($response));
+    if ($new_message != '' && $new_message != null && $response != '' && $response != null)
+    {
+        $response = array_merge($response, $add_arr);
+        fwrite($get_log, $get_log . "\n\n" . json_encode($response));
+    }
 }
