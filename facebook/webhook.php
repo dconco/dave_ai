@@ -1,8 +1,7 @@
 <?php
 
 include_once './send.php';
-
-$my_verify_token = 'davebot123';
+include_once '../config.php';
 
 $challenge = $_GET['hub_challenge'];
 $verify_token = $_GET['hub_verify_token'];
@@ -12,8 +11,6 @@ if ($my_verify_token === $verify_token)
     echo $challenge;
     exit;
 }
-
-$access_token = 'EAAOOom4rGZAQBO3mvNrzcIAR6qeSSk0xBpqV6GxrZCdlwC1ZBQYBRcouF33YasGd3W6OEr7ToVHHLHl2erqDZBZA7ZAOQvJxdNZC68pM3qOz4JLNbFtt47SrLC1lK14QZCxeMboYSUapLjkNILO0wjXAlvGxirflWlQHYRuEfGYNEQzF7uXiGFeIUACsJJ13hZCUz2nHQvuut09aor1aI';
 
 $response = file_get_contents('php://input');
 

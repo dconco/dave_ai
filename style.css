@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Agbalumo&family=Nunito&display=swap');
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: #106ab9;
+}
+
+* {
+    scroll-behavior: smooth !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+*::-webkit-scrollbar {
+    width: 0;
+}
+
+header {
+    top: 0;
+    width: 100%;
+    height: 130px;
+    display: flex;
+    position: sticky;
+    background: linear-gradient(45deg, #0ac365, #67f4e9);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3), inset 4px 4px 15px #0ac365, inset -4px -4px 15px #67f4e9, inset 4px 4px 3px #e6e6e6c5, inset -4px -4px 3px #e6e6e6c5, inset 2px 2px 2px #4444449a, inset -2px -2px 2px #4444449a;
+}
+
+header>img {
+    width: 100px;
+    height: 100px;
+    margin-left: 10px;
+    animation: movelogo 1s ease-out infinite;
+}
+
+header>h1 {
+    font-size: 40px;
+    color: #474747;
+    margin-left: 10px;
+    font-family: 'Agbalumo', Nunito sans-serif;
+}
+
+@keyframes movelogo {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(15px);
+    }
+    80%,
+    100% {
+        transform: translateY(20px);
+    }
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.message {
+    gap: 10px;
+    width: 100%;
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 110px;
+    flex-direction: column;
+}
+
+.bot_msg {
+    width: auto;
+    display: flex;
+    max-width: 80%;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.message span {
+    font-size: 18px;
+    padding: 15px 20px;
+    word-break: break-all;
+    font-family: 'Nunito', sans-serif;
+}
+
+.bot_message {
+    background-color: #23e2f8;
+    border-radius: 0 20px 20px 20px;
+}
+
+.user_msg {
+    width: auto;
+    display: flex;
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+.user_message {
+    background-color: #18b873;
+    border-radius: 20px 20px 0 20px;
+}
+
+.msg_time {
+    float: right;
+    font-size: 12px;
+    color: #474747;
+}
+
+.bot_msg img {
+    width: 50px;
+    height: 55px;
+}
+
+.input_bx {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg, #10b7b9 40%, #0ac365 80%);
+}
+
+.input_bx .innerbox {
+    gap: 10px;
+    width: 100%;
+    height: 40px;
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    background: #fff;
+    border-radius: 50px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.innerbox input {
+    height: 100%;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    font-weight: 600;
+    margin-left: 10px;
+    width: calc(100% - 50px);
+    font-family: 'Nunito', serif;
+}
+
+input::placeholder {
+    color: #808080;
+}
+
+.innerbox button {
+    width: 65px;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: #ffff;
+    cursor: pointer;
+    font-size: 20px;
+    transition: .4s;
+    border-radius: 47%;
+    margin-right: -4px;
+    background: #2ec6ee;
+    border: 2px solid #808080;
+}
+
+.innerbox button:hover {
+    background: #0fa0c6;
+}
+
+.innerbox button:active {
+    transform: scale(0.8);
+}

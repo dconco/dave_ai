@@ -1,19 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=7">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DaveBot | World of Ai</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="title" , content="DaveBot | World of Ai" />
+    <meta name="description" content="DaveBot | World of Ai" />
+
+    <link rel="apple-touch-icon" href="img/logo.png" sizes="307x307" />
+    <link rel="shortcut icon" href="img/logo.png" type="image/png" />
+    <link rel="icon" type="image/png" href="img/logo.png" />
+    <meta name="theme-color" content="#0ac365" />
+
+    <link rel="stylesheet" href="style.css" type="text/css" media="all" />
+
+    <!-- JAVASCRIPT LINKS -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 
-<body class="text-center">
-    <h2>Welcome to DaveBot | World of Ai</h2>
-    <br>
-    <a href="https://dconco.github.com/davebot"><button class="btn btn-primary">Continue</button></a>
+<body>
+    <header>
+        <img src="img/logo.png" alt="DaveBot Icon" draggable="false" />
+        <h1>DaveBot</h1>
+    </header>
+
+    <form class="container">
+        <!--MESSAGES GOES HERE-->
+        <div class="message" id="message-wrapper"></div>
+
+        <!-- SEND MESSAGES -->
+        <div class="input_bx">
+            <div class="innerbox">
+                <input type="text" id="input" placeholder="Write message..." autocomplete="off" autofocus />
+                <button type="submit" id="send-btn">
+                    <iconify-icon icon="fa-solid:paper-plane" id="send-icon"></iconify-icon>
+                </button>
+            </div>
+        </div>
+    </form>
+    <script src="main.js" type="text/javascript" charset="utf-8"></script>
 </body>
 
 </html>

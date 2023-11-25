@@ -1,15 +1,13 @@
 <?php
 
-require './vendor/autoload.php';
-require './env.config.php';
-require './cors.php';
+include_once './vendor/autoload.php';
+include_once './cors.php';
+include_once './config.php';
 
 use Orhanerday\OpenAi\OpenAi;
 
-$open_ai_secret = getenv('OPENAI_API_KEY');
 $open_ai = new OpenAi($open_ai_secret);
 $open_ai->setORG("org-evQwRS16eXJhUXWWPv0OoMzS");
-
 
 header("Content-Type: Application/json");
 
@@ -23,11 +21,6 @@ $req_data = json_decode(file_get_contents("php://input"), false);
 if (empty($req_data->message) || !isset($req_data->message))
 {
     header("HTTP/1.1 400 Request body message is empty");
-    exit;
-}
-else if (empty($req_data->origin) || !isset($req_data->origin) || !preg_match('/^((http?:\/\/)?localhost\/?)$/', $req_data->origin))
-{
-    header("HTTP/1.1 400 Request origin is invalid");
     exit;
 }
 
@@ -57,21 +50,6 @@ if ($chat)
         'created' => $data->created,
         'data' => $data->choices[0]->message->content,
     ];
-
-
-    // if (isset($_COOKIE['message_db']))
-    // {
-    //     $message_db = (array)json_decode(base64_decode($_COOKIE['message_db']), true);
-    //     $value = array_merge($message_db, $response);
-
-    //     $messages = base64_encode(json_encode($value));
-    //     setcookie('message_db', $messages, time() + (86400 * 30), "/");
-    // }
-    // else
-    // {
-    //     $messages = base64_encode(json_encode($response));
-    //     setcookie('message_db', $messages, time() + (86400 * 30), "/");
-    // }
 
     header("HTTP/1.1 200 OK");
     echo json_encode($response);
